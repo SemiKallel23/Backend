@@ -52,7 +52,7 @@ router.post('/register', async (req, res) => {
     // Enregistrement de l'utilisateur en base de données
     await newUser.save();
 
-    res.status(201).json({ message: 'Inscription réussie.', user: newUser });
+    res.status(201).json({ message: 'Inscription réussie.', status: 201, user: newUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
@@ -115,7 +115,7 @@ router.get('/profile', verifyToken, async (req, res) => {
 
 
     // Retourner les détails du profil de l'utilisateur
-    res.status(200).json({ user });
+    res.status(200).json({ status: 200, data: user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });

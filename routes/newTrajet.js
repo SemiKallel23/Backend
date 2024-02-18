@@ -147,4 +147,42 @@ router.post('/createReservation', async (req, res) => {
   }
 });
 
+router.get('/reservation', async (req, res) => {
+  try {
+    const reservations = await reservation.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy"
+        }
+      },
+      {
+        $lookup: {
+          from: "trajets",
+          localField: "relatedToRoute",
+          foreignField: "_id",
+          as: "relatedToRoute"
+        }
+      },
+      {
+        $match: {
+          $and: [
+            { "createdBy": { $ne: [] } }, // Exclude Trajets with no matching users
+            { "relatedToRoute": { $ne: [] } }
+          ]
+        }
+      }
+    ]);
+    // Retourner les détails du profil de l'utilisateur
+    res.status(200).json({ reservations: reservations, status: 200 });
+  } catch (error) {
+    console.error("dfsdfs", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
 module.exports = router;

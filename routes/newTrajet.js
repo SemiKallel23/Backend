@@ -17,7 +17,6 @@ router.post('/create', async (req, res) => {
       createdBy
     } = req.body;
 
-
     // Création d'un nouveau trajet 
     const newTrajet = new Trajet({
       startAdress,
@@ -53,8 +52,7 @@ router.get('/trajet', async (req, res) => {
         $match: {
           $and: [
             { "createdBy": { $ne: [] } }, // Exclude Trajets with no matching users
-            { "createdBy.role": "conducteur" }, // Filter Trajets by the role "conductor"
-            { "createdBy.status": { $ne: "reserved" } }
+            { "createdBy.role": "driver" }, // Filter Trajets by the role "conductor"
           ]
         }
       }

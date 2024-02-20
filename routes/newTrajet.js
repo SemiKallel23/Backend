@@ -4,7 +4,6 @@ const router = express.Router();
 const Trajet = require('../models/trajet');
 const reservation = require('../models/reservation');
 
-// Endpoint pour l'inscription
 router.post('/create', async (req, res) => {
   try {
     const {
@@ -14,6 +13,7 @@ router.post('/create', async (req, res) => {
       arrivalTime,
       nbrPlaces,
       car,
+      date,
       createdBy
     } = req.body;
 
@@ -25,6 +25,7 @@ router.post('/create', async (req, res) => {
       arrivalTime,
       nbrPlaces,
       car,
+      date,
       createdBy
     });
 

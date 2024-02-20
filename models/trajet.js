@@ -9,8 +9,9 @@ const trajetSchema = new Schema({
   arrivalTime: { type: String },
   nbrPlaces: { type: Number },
   car: { type: String },
+  date: { type: Date }, // Ajouter le champ date de type Date
   createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
-  status: { type: String, default: "none" },// waiting, reserved, full, none
+  status: { type: String, default: "none" }, // waiting, reserved, full, none
   nbrOfPlacesAccepted: { type: Number, default: 0 },
 });
 

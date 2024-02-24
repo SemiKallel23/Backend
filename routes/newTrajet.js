@@ -138,8 +138,12 @@ router.post('/createReservation', async (req, res) => {
       relatedToRoute,
       idDriver
     });
-    await Trajet.findByIdAndUpdate(relatedToRoute, { status: "waiting" })
-    await newReservation.save();
+    const reservationID = await newReservation.save();
+    await Trajet.findByIdAndUpdate(relatedToRoute,
+      {
+        status: "waiting",
+        $push: { listOfReservation: reservationID._id }
+      })
 
     res.status(201).json({ message: 'Création réussite.', reservation: newReservation });
   } catch (error) {
@@ -151,6 +155,9 @@ router.post('/createReservation', async (req, res) => {
 router.get('/reservation', async (req, res) => {
   try {
     const reservations = await reservation.aggregate([
+      {
+        $match: { "status": "waiting" }
+      },
       {
         $lookup: {
           from: "users",
@@ -184,6 +191,49 @@ router.get('/reservation', async (req, res) => {
   }
 });
 
+router.post('/acceptReservation', async (req, res) => {
+  try {
+    const {
+      trajetId,
+      reservationId,
+      passengerId
+    } = req.body;
+    const updateTrajet = await Trajet.updateOne({
+      _id: trajetId,
+      status: { $ne: 'full' }
+    },
+      {
+        $inc: { nbrOfPlacesAccepted: 1 },
+        $push: { listOfAcceptedUser: passengerId }
+      },
+      { new: true }
+    )
+    if (updateTrajet) {
+      console.log("reservationId", reservationId);
+      await reservation.updateOne({ _id: reservationId },
+        {
+          status: "accepted"
+        })
+      await Trajet.updateOne({ _id: trajetId }, [
+        {
+          $set: {
+            status: {
+              $cond: {
+                if: { $eq: ['$nbrOfPlacesAccepted', '$nbrPlaces'] },
+                then: 'full',
+                else: 'waiting',
+              },
+            },
+          },
+        },
+      ],)
+    }
+    res.status(200).json({ reservations: updateTrajet, status: 200 });
+  } catch (error) {
+    console.error("dfsdfs", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 
 module.exports = router;

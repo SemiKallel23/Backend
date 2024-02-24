@@ -13,6 +13,14 @@ const trajetSchema = new Schema({
   createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
   status: { type: String, default: "none" }, // waiting, reserved, full, none
   nbrOfPlacesAccepted: { type: Number, default: 0 },
+  listOfReservation: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reservation'
+  }],
+  listOfAcceptedUser: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
 });
 
 const Trajet = mongoose.model('Trajet', trajetSchema);

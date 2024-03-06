@@ -24,11 +24,6 @@ db.once('open', () => {
 app.use('/auth', authRoutes);
 app.use('/trajet', trajetRoutes);
 
-/* const port = process.env.PORT || 4002;
-app.listen(port, () => {
-  console.log(`Serveur en cours d'exécution sur le port ${port}`);
-}); */
-
 module.exports = app;
 
 

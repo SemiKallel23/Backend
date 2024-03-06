@@ -13,6 +13,7 @@ router.post('/create', async (req, res) => {
       arrivalTime,
       nbrPlaces,
       car,
+      matricule,
       date,
       createdBy
     } = req.body;
@@ -25,6 +26,7 @@ router.post('/create', async (req, res) => {
       arrivalTime,
       nbrPlaces,
       car,
+      matricule,
       date,
       createdBy
     });
@@ -102,8 +104,6 @@ router.put('/update/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-
 
 router.delete('/delete/:id', async (req, res) => {
   try {
@@ -234,6 +234,32 @@ router.post('/acceptReservation', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.post('/rejectReservation', async (req, res) => {
+  try {
+    const { trajetId, reservationId } = req.body;
+
+    const updateTrajet = await Trajet.updateOne(
+      { _id: trajetId },
+      { $pull: { listOfReservation: reservationId } }
+    );
+
+    if (updateTrajet) {
+      console.log("reservationId", reservationId);
+      await reservation.updateOne({ _id: reservationId },
+        {
+          status: "rejected"
+        })
+      }
+
+
+    res.status(200).json({ message: 'Reservation rejected successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 
 module.exports = router;

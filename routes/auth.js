@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
+const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const verifyToken = require('../middleware/auth');
@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Hash du mot de passe
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await argon2.hash(password);
 
     // Création d'un nouvel utilisateur avec le mot de passe haché
     const newUser = new User({
@@ -80,7 +80,7 @@ router.post('/login', async (req, res) => {
       return res.status(500).json({ message: 'Le hash du mot de passe est manquant dans la base de données.' });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await argon2.verify(user.password, password);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
     }

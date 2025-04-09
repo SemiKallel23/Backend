@@ -1,0 +1,22 @@
+name: Manage SQL Pool
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Exécute à 08h00 UTC
+    - cron: '0 17 * * *' # Exécute à 17h00 UTC
+
+jobs:
+  manage_sql_pool:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Connexion à Azure
+      run: az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+    - name: Start SQL Pool (08h00)
+      if: github.event.schedule == '0 8 * * *'
+      run: az synapse sql pool resume --name TON-SQL-POOL --workspace-name TON-SYNAPSE-WORKSPACE --resource-group TON-RESOURCE-GROUP
+
+    - name: Suspend SQL Pool (17h00)
+      if: github.event.schedule == '0 17 * * *'
+      run: az synapse sql pool pause --name TON-SQL-POOL --workspace-name TON-SYNAPSE-WORKSPACE --resource-group TON-RESOURCE-GROUP
